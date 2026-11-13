@@ -1,4 +1,5 @@
 <script lang="ts">
+  import mark from "../../../assets/brand/parser-mark.svg";
   import { Modal } from "@kenn-io/kit-ui";
   import { m } from "../../i18n/index.js";
   import { sync } from "../../stores/sync.svelte.js";
@@ -21,20 +22,14 @@
 </script>
 
 <Modal
-  ariaLabel="AgentsView"
+  ariaLabel="Parser"
   closeLabel={m.about_close()}
   width="320px"
   onclose={() => (ui.activeModal = null)}
 >
   <div class="about-header">
-    <svg class="about-logo" width="40" height="40" viewBox="0 0 32 32" aria-hidden="true">
-      <rect width="32" height="32" rx="6" fill="var(--accent-blue, #3b82f6)"/>
-      <rect x="13" y="10" width="6" height="16" rx="2" fill="var(--bg-surface, #fff)"/>
-      <rect x="11" y="5" width="10" height="7" rx="2" fill="var(--bg-surface, #fff)"/>
-      <circle cx="18" cy="8.5" r="2" fill="var(--accent-blue, #3b82f6)"/>
-      <circle cx="18" cy="8.5" r="1" fill="#1d4ed8"/>
-    </svg>
-    <div class="about-name">AgentsView</div>
+    <img class="about-logo" src={mark} width="40" height="40" alt="" />
+    <div class="about-name">Parser</div>
   </div>
 
   <div class="about-body">

@@ -1,4 +1,6 @@
 <script lang="ts">
+  import logo from "../../../assets/brand/logo.svg";
+  import logoDark from "../../../assets/brand/logo-dark.svg";
   import { m } from "../../i18n/index.js";
   import {
     FitStages,
@@ -186,14 +188,8 @@
       onclick={() => router.navigate("sessions")}
       title={m.nav_home()}
     >
-      <svg class="header-logo" width="18" height="18" viewBox="0 0 32 32" aria-hidden="true">
-        <rect width="32" height="32" rx="6" fill="var(--accent-blue, #3b82f6)"/>
-        <rect x="13" y="10" width="6" height="16" rx="2" fill="var(--bg-surface, #fff)"/>
-        <rect x="11" y="5" width="10" height="7" rx="2" fill="var(--bg-surface, #fff)"/>
-        <circle cx="18" cy="8.5" r="2" fill="var(--accent-blue, #3b82f6)"/>
-        <circle cx="18" cy="8.5" r="1" fill="#1d4ed8"/>
-      </svg>
-      <span class="header-title">AgentsView</span>
+      <img class="header-logo logo-light" src={logo} alt="Parser" />
+      <img class="header-logo logo-dark" src={logoDark} alt="Parser" />
     </button>
 
     <span class="project-picker">
@@ -381,15 +377,22 @@
   }
 
   .header-logo {
+    width: 135px;
+    height: 18px;
+    object-fit: contain;
     flex-shrink: 0;
   }
 
-  .header-title {
-    font-size: 12px;
-    font-weight: 650;
-    color: var(--text-primary);
-    white-space: nowrap;
-    letter-spacing: -0.01em;
+  .logo-dark {
+    display: none;
+  }
+
+  :global(:root.dark) .logo-light {
+    display: none;
+  }
+
+  :global(:root.dark) .logo-dark {
+    display: block;
   }
 
   /* The closed trigger keeps a fixed width so the bar never reflows (and
@@ -652,10 +655,6 @@
 
   /* 640px: minimal mode — collapse further */
   @media (max-width: 640px) {
-    .header-title {
-      display: none;
-    }
-
     .search-hint {
       padding: 0 8px;
     }

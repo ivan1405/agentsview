@@ -1,0 +1,11 @@
+<svg id="Parser_Symbol" data-name="Parser Symbol" xmlns="http://www.w3.org/2000/svg" viewBox="-156.5 -158.3 880 880">
+  <title>Parser Symbol</title>
+  <g fill="#FA424D">
+    <rect x="-76.76" y="230.43" width="563.48" height="135" rx="67.5" ry="67.5" transform="translate(-230.43 486.72) rotate(-90)"/>
+    <rect x="246.32" y="123.31" width="349.24" height="135" rx="67.5" ry="67.5" transform="translate(92.66 595.57) rotate(-90)"/>
+    <circle cx="499.43" cy="67.5" r="67.5"/>
+    <circle cx="499.43" cy="281.74" r="67.5"/>
+    <circle cx="499.43" cy="495.98" r="67.5"/>
+    <circle cx="283.46" cy="495.98" r="67.5"/>
+  </g>
+</svg>
