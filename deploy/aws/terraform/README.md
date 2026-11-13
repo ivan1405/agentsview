@@ -312,4 +312,4 @@ and regenerated environment/CA files. Never reuse real-AWS state.
   but no real ACM certificate or DNS name is required or issued locally.
   Do not set `route53_zone_id` locally.
 - With `aws_emulator = false` (the default), the AWS resource configuration
-  stays unchanged. State moves preserve existing policy/rule addresses.
+  stays unchanged.
