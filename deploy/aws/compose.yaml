@@ -1,0 +1,84 @@
+name: agentsview-emulator
+
+x-app: &app
+  image: ${AGENTSVIEW_IMAGE:?Generate .env.emulator first}
+  network_mode: host
+  init: true
+  stop_grace_period: 40s
+  entrypoint: ["/bin/sh", "-c"]
+  depends_on:
+    postgres:
+      condition: service_healthy
+
+x-environment: &environment
+  AGENTSVIEW_MODE: pg-serve
+  AGENTSVIEW_DATA_DIR: /data
+  AGENTSVIEW_HOST: 127.0.0.1
+  AGENTSVIEW_REQUIRE_AUTH: "true"
+  AGENTSVIEW_NO_BROWSER: "true"
+  AGENTSVIEW_AUTH_TOKEN: ${AGENTSVIEW_AUTH_TOKEN:?}
+  PG_PASSWORD: ${PG_PASSWORD:?}
+
+services:
+  postgres:
+    image: postgres:16
+    network_mode: host
+    command: ["postgres", "-c", "listen_addresses=127.0.0.1", "-p", "15432"]
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:?}
+      POSTGRES_DB: ${POSTGRES_DB:?}
+      POSTGRES_PASSWORD: ${PG_PASSWORD:?}
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -p 15432 -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 2s
+      timeout: 2s
+      retries: 30
+
+  web:
+    <<: *app
+    depends_on:
+      collector:
+        condition: service_healthy
+    environment:
+      <<: *environment
+      AGENTSVIEW_CONFIG_TOML: ${AGENTSVIEW_WEB_CONFIG_TOML:?}
+    command:
+      - >-
+        umask 077;
+        printf '%s' "$$AGENTSVIEW_CONFIG_TOML" > /data/config.toml &&
+        exec /usr/local/bin/agentsview replica pg serve
+        --host 127.0.0.1 --port 8080 --public-url http://localhost:8080
+    tmpfs:
+      - /data:mode=0700
+
+  collector:
+    <<: *app
+    healthcheck:
+      test: ["CMD", "/bin/bash", "-c", "exec 3<>/dev/tcp/127.0.0.1/8081"]
+      interval: 2s
+      timeout: 2s
+      retries: 60
+    environment:
+      <<: *environment
+      AGENTSVIEW_CONFIG_TOML: ${AGENTSVIEW_COLLECTOR_CONFIG_TOML:?}
+      AWS_S3_ENDPOINT: https://127.0.0.1:9297
+      AWS_REGION: ${AWS_REGION:?}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:?}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:?}
+      SSL_CERT_FILE: /emulator/ca.pem
+    volumes:
+      - archive:/data
+      - ./.emulator-ca.pem:/emulator/ca.pem:ro
+    command:
+      - >-
+        umask 077;
+        printf '%s' "$$AGENTSVIEW_CONFIG_TOML" > /data/config.toml &&
+        exec /usr/local/bin/agentsview replica pg serve
+        --push-watch --interval ${COLLECTOR_INTERVAL:?}
+        --host 127.0.0.1 --port 8081
+
+volumes:
+  postgres:
+  archive:

@@ -87,7 +87,7 @@ resource "aws_ecs_service" "web" {
   health_check_grace_period_seconds = 120
   network_configuration {
     subnets          = aws_subnet.private[*].id
-    security_groups  = [aws_security_group.service["web"].id]
+    security_groups  = [local.service_security_group_ids["web"]]
     assign_public_ip = false
   }
   load_balancer {
@@ -109,7 +109,7 @@ resource "aws_ecs_service" "collector" {
   enable_execute_command             = var.enable_ecs_exec
   network_configuration {
     subnets          = aws_subnet.private[*].id
-    security_groups  = [aws_security_group.service["collector"].id]
+    security_groups  = [local.service_security_group_ids["collector"]]
     assign_public_ip = false
   }
   depends_on = [aws_efs_mount_target.collector, aws_efs_file_system_policy.collector, aws_iam_role_policy.efs, aws_route.nat, aws_iam_role_policy.secrets, aws_iam_role_policy_attachment.execution, aws_secretsmanager_secret_version.collector, aws_secretsmanager_secret_version.auth, aws_secretsmanager_secret_version.database]

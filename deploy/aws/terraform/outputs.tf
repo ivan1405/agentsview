@@ -1,5 +1,5 @@
 output "url" {
-  value = "https://${var.domain_name}"
+  value = var.aws_emulator ? "http://localhost:8080" : "https://${var.domain_name}"
 }
 output "alb_dns_name" {
   value = aws_lb.web.dns_name
@@ -22,4 +22,23 @@ output "uploader_keys" {
 }
 output "ecs_cluster" {
   value = aws_ecs_cluster.main.name
+}
+
+output "emulator_runtime" {
+  description = "Local Compose configuration; contains emulator-only credentials. Never publish."
+  sensitive   = true
+  value = var.aws_emulator ? {
+    AGENTSVIEW_IMAGE                 = var.image
+    AGENTSVIEW_AUTH_TOKEN            = random_password.auth.result
+    AGENTSVIEW_WEB_CONFIG_TOML       = local.web_config
+    AGENTSVIEW_COLLECTOR_CONFIG_TOML = local.collector_config
+    COLLECTOR_INTERVAL               = var.collector_interval
+    POSTGRES_USER                    = aws_db_instance.main.username
+    POSTGRES_DB                      = aws_db_instance.main.db_name
+    PG_PASSWORD                      = random_password.database.result
+    AWS_ACCESS_KEY_ID                = aws_iam_access_key.collector.id
+    AWS_SECRET_ACCESS_KEY            = aws_iam_access_key.collector.secret
+    AWS_REGION                       = var.region
+    INGEST_BUCKET                    = aws_s3_bucket.ingest.id
+  } : null
 }

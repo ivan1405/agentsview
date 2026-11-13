@@ -67,34 +67,36 @@ resource "aws_vpc_endpoint" "s3" {
   route_table_ids   = aws_route_table.private[*].id
 }
 resource "aws_security_group" "service" {
-  for_each    = toset(["web", "collector", "alb", "db", "efs"])
+  for_each    = var.aws_emulator ? toset([]) : toset(["web", "collector", "alb", "db", "efs"])
   name_prefix = "${var.name}-${each.key}-"
   vpc_id      = aws_vpc.main.id
 }
 resource "aws_vpc_security_group_egress_rule" "outbound" {
-  for_each          = toset(["web", "collector", "alb"])
-  security_group_id = aws_security_group.service[each.key].id
+  for_each          = var.aws_emulator ? toset([]) : toset(["web", "collector", "alb"])
+  security_group_id = local.service_security_group_ids[each.key]
   ip_protocol       = "-1"
   cidr_ipv4         = "0.0.0.0/0"
 }
 resource "aws_vpc_security_group_ingress_rule" "db" {
-  for_each                     = toset(["web", "collector"])
-  security_group_id            = aws_security_group.service["db"].id
-  referenced_security_group_id = aws_security_group.service[each.key].id
+  for_each                     = var.aws_emulator ? toset([]) : toset(["web", "collector"])
+  security_group_id            = local.service_security_group_ids["db"]
+  referenced_security_group_id = local.service_security_group_ids[each.key]
   ip_protocol                  = "tcp"
   from_port                    = 5432
   to_port                      = 5432
 }
 resource "aws_vpc_security_group_ingress_rule" "efs" {
-  security_group_id            = aws_security_group.service["efs"].id
-  referenced_security_group_id = aws_security_group.service["collector"].id
+  count                        = var.aws_emulator ? 0 : 1
+  security_group_id            = local.service_security_group_ids["efs"]
+  referenced_security_group_id = local.service_security_group_ids["collector"]
   ip_protocol                  = "tcp"
   from_port                    = 2049
   to_port                      = 2049
 }
 resource "aws_vpc_security_group_ingress_rule" "web" {
-  security_group_id            = aws_security_group.service["web"].id
-  referenced_security_group_id = aws_security_group.service["alb"].id
+  count                        = var.aws_emulator ? 0 : 1
+  security_group_id            = local.service_security_group_ids["web"]
+  referenced_security_group_id = local.service_security_group_ids["alb"]
   ip_protocol                  = "tcp"
   from_port                    = 8080
   to_port                      = 8080

@@ -1,3 +1,8 @@
+variable "aws_emulator" {
+  type        = bool
+  default     = false
+  description = "Use local AWS Emulator APIs via AWS_ENDPOINT_URL; never enable against real AWS."
+}
 variable "region" {
   type    = string
   default = "us-east-1"

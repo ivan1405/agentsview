@@ -18,10 +18,10 @@ resource "aws_efs_access_point" "collector" {
   }
 }
 resource "aws_efs_mount_target" "collector" {
-  count           = 2
+  count           = var.aws_emulator ? 0 : 2
   file_system_id  = aws_efs_file_system.collector.id
   subnet_id       = aws_subnet.private[count.index].id
-  security_groups = [aws_security_group.service["efs"].id]
+  security_groups = [local.service_security_group_ids["efs"]]
 }
 resource "aws_backup_vault" "collector" {
   name = "${var.name}-collector"

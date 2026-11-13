@@ -131,6 +131,7 @@ resource "aws_iam_role_policy" "efs" {
   })
 }
 resource "aws_efs_file_system_policy" "collector" {
+  count          = var.aws_emulator ? 0 : 1
   file_system_id = aws_efs_file_system.collector.id
   policy = jsonencode({
     Version = "2012-10-17"

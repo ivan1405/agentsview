@@ -46,6 +46,10 @@ run "two_machines" {
     machines = ["laptop", "ci-runner"]
   }
   assert {
+    condition     = output.emulator_runtime == null && length(aws_security_group.service) == 5 && length(aws_efs_mount_target.collector) == 2 && length(aws_efs_file_system_policy.collector) == 1 && output.url == "https://sessions.example.com"
+    error_message = "Normal AWS mode must retain its security groups, EFS, and HTTPS URL without local secrets."
+  }
+  assert {
     condition     = aws_db_instance.main.password == jsondecode(aws_secretsmanager_secret_version.database.secret_string).password
     error_message = "RDS and the injected secret must use the same password."
   }
@@ -100,4 +104,24 @@ run "unsupported_agent" {
   command = plan
   variables { agents = ["unsupported"] }
   expect_failures = [var.agents]
+}
+
+run "emulator" {
+  command = apply
+  variables {
+    aws_emulator = true
+    machines     = ["laptop"]
+  }
+  assert {
+    condition     = length(aws_security_group.service) == 0 && length(aws_vpc_security_group_egress_rule.outbound) == 0 && length(aws_vpc_security_group_ingress_rule.db) == 0 && length(aws_vpc_security_group_ingress_rule.http) == 0 && length(aws_vpc_security_group_ingress_rule.https) == 0 && length(aws_vpc_security_group_ingress_rule.web) == 0 && length(aws_vpc_security_group_ingress_rule.efs) == 0
+    error_message = "Emulator mode must skip unsupported security-group management."
+  }
+  assert {
+    condition     = length(aws_efs_mount_target.collector) == 0 && length(aws_efs_file_system_policy.collector) == 0
+    error_message = "Emulator mode must skip unsupported EFS mount queries and policy validation."
+  }
+  assert {
+    condition     = output.emulator_runtime.AWS_ACCESS_KEY_ID == aws_iam_access_key.collector.id && output.emulator_runtime.PG_PASSWORD == random_password.database.result && output.emulator_runtime.AGENTSVIEW_COLLECTOR_CONFIG_TOML == local.collector_config && strcontains(local.pg_config, "@127.0.0.1:15432/agentsview?sslmode=disable") && output.url == "http://localhost:8080"
+    error_message = "Compose must use the Terraform collector key, configuration, and local PostgreSQL."
+  }
 }

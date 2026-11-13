@@ -1,14 +1,14 @@
 resource "aws_vpc_security_group_ingress_rule" "https" {
-  for_each          = var.allowed_cidrs
-  security_group_id = aws_security_group.service["alb"].id
+  for_each          = var.aws_emulator ? toset([]) : var.allowed_cidrs
+  security_group_id = local.service_security_group_ids["alb"]
   cidr_ipv4         = each.value
   ip_protocol       = "tcp"
   from_port         = 443
   to_port           = 443
 }
 resource "aws_vpc_security_group_ingress_rule" "http" {
-  for_each          = var.allowed_cidrs
-  security_group_id = aws_security_group.service["alb"].id
+  for_each          = var.aws_emulator ? toset([]) : var.allowed_cidrs
+  security_group_id = local.service_security_group_ids["alb"]
   cidr_ipv4         = each.value
   ip_protocol       = "tcp"
   from_port         = 80
@@ -19,7 +19,7 @@ resource "aws_lb" "web" {
   internal           = false
   load_balancer_type = "application"
   subnets            = aws_subnet.public[*].id
-  security_groups    = [aws_security_group.service["alb"].id]
+  security_groups    = [local.service_security_group_ids["alb"]]
 }
 resource "aws_lb_target_group" "web" {
   name_prefix = "av-"
