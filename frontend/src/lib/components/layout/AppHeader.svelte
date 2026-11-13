@@ -1,6 +1,7 @@
 <script lang="ts">
   import logo from "../../../assets/brand/logo.svg";
   import logoDark from "../../../assets/brand/logo-dark.svg";
+  import mark from "../../../assets/brand/parser-mark.svg";
   import { m } from "../../i18n/index.js";
   import {
     FitStages,
@@ -190,6 +191,7 @@
     >
       <img class="header-logo logo-light" src={logo} alt="Parser" />
       <img class="header-logo logo-dark" src={logoDark} alt="Parser" />
+      <img class="header-mark" src={mark} width="18" height="18" alt="Parser" />
     </button>
 
     <span class="project-picker">
@@ -383,7 +385,8 @@
     flex-shrink: 0;
   }
 
-  .logo-dark {
+  .logo-dark,
+  .header-mark {
     display: none;
   }
 
@@ -655,6 +658,15 @@
 
   /* 640px: minimal mode — collapse further */
   @media (max-width: 640px) {
+    .header-logo,
+    :global(:root.dark) .logo-dark {
+      display: none;
+    }
+
+    .header-mark {
+      display: block;
+    }
+
     .search-hint {
       padding: 0 8px;
     }

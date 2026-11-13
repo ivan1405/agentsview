@@ -23,3 +23,34 @@ test("Parser branding follows the theme and opens About", async ({ page }) => {
   await page.reload();
   await expect(home.getByRole("img", { name: "Parser" })).toHaveClass(/logo-dark/);
 });
+
+for (const theme of ["light", "dark"]) {
+  test(`compact Parser mark keeps header controls separate in ${theme}`, async ({ page }) => {
+    await page.addInitScript((theme) => localStorage.setItem("theme", theme), theme);
+    await new SessionsPage(page).goto();
+    for (const width of [500, 600]) {
+      await page.setViewportSize({ width, height: 900 });
+      const brand = page.locator(".header-home").getByRole("img", { name: "Parser" });
+      await expect(brand).toHaveClass(/header-mark/);
+      await expect(brand).toHaveCSS("width", "18px");
+      await expect(brand).toHaveCSS("height", "18px");
+      const nav = page.locator(".kit-top-bar__nav-select");
+      const search = page.locator(".search-hint:visible");
+      const sync = page.locator(".sync-btn");
+      await expect(nav).toBeVisible();
+      await expect(search).toBeVisible();
+      await expect(sync).toBeInViewport();
+      await expect
+        .poll(async () => {
+          const boxes = await Promise.all([
+            nav.boundingBox(),
+            search.boundingBox(),
+            sync.boundingBox(),
+          ]);
+          const [n, s, y] = boxes;
+          return !!n && !!s && !!y && n.x + n.width <= s.x && s.x + s.width <= y.x;
+        })
+        .toBe(true);
+    }
+  });
+}
