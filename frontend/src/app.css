@@ -36,6 +36,20 @@
 
 /* Light theme (default) — app-specific tokens */
 :root {
+  /* Port Parser’s --hub-* tokens from LibreChat client/src/style.css. */
+  --bg-primary: #eff4f8; /* kit-ui-check-ignore: app token definition */
+  --bg-surface: #ffffff; /* kit-ui-check-ignore: app token definition */
+  --bg-surface-hover: #e3ebf1; /* kit-ui-check-ignore: app token definition */
+  --bg-inset: #f7f9fb; /* kit-ui-check-ignore: app token definition */
+  --border-default: #cfdae3; /* kit-ui-check-ignore: app token definition */
+  --border-muted: #dce4e9; /* kit-ui-check-ignore: app token definition */
+  --text-primary: #012542; /* kit-ui-check-ignore: app token definition */
+  --text-secondary: #242d44; /* kit-ui-check-ignore: app token definition */
+  --text-muted: #4b657b; /* kit-ui-check-ignore: app token definition */
+  --accent-red: #e44144; /* kit-ui-check-ignore: app token definition */
+  --focus-ring: 2px solid #242d44; /* kit-ui-check-ignore: app token definition */
+  --font-mono: "Roboto Mono", "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
+
   /* Deliberate override: kit-ui's --accent-teal is cyan-leaning,
      which would collide with --accent-cyan below. agentsview uses teal and
      cyan as distinct agent-identity hues, so keep the greener teal. */
@@ -73,7 +87,7 @@
   --accent-coral-foreground: #07111f; /* kit-ui-check-ignore: app token definition */
   --accent-black-foreground: #ffffff; /* kit-ui-check-ignore: app token definition */
   --accent-teal-foreground: #07111f; /* kit-ui-check-ignore: app token definition */
-  --accent-red-foreground: #ffffff; /* kit-ui-check-ignore: app token definition */
+  --accent-red-foreground: #07111f; /* kit-ui-check-ignore: app token definition */
   --accent-indigo-foreground: #000000; /* kit-ui-check-ignore: app token definition */
   --accent-orange-foreground: #07111f; /* kit-ui-check-ignore: app token definition */
   --accent-sky-foreground: #07111f; /* kit-ui-check-ignore: app token definition */
@@ -85,25 +99,25 @@
      in utils/agents.ts). Names mix 82% ink into the text color and sit on
      surfaces down to the selected sidebar row, a blue tint over the hover
      fill. Several light accents fall to about 2.7:1 there, so each of those
-     keeps its OKLCH hue and chroma and lowers its lightness until the name
-     reaches 4.6:1 on that row. Accents that already clear it are their own
-     ink. Dark theme names use the accents unchanged (see :root.dark). */
-  --accent-blue-ink: var(--accent-blue);
+     darkens its ink until the name reaches 4.6:1 on that row. Accents that
+     already clear it are their own ink. Dark theme inks are lifted where
+     needed to remain readable on the navy selected surfaces. */
+  --accent-blue-ink: #2461e6; /* kit-ui-check-ignore: app token definition */
   --accent-purple-ink: var(--accent-purple);
-  --accent-red-ink: var(--accent-red);
-  --accent-rose-ink: var(--accent-rose);
+  --accent-red-ink: #b3262a; /* kit-ui-check-ignore: app token definition */
+  --accent-rose-ink: #dd1c47; /* kit-ui-check-ignore: app token definition */
   --accent-black-ink: var(--accent-black);
   --accent-violet-ink: var(--accent-violet);
-  --accent-amber-ink: #b05f00; /* kit-ui-check-ignore: app token definition */
-  --accent-green-ink: #02845c; /* kit-ui-check-ignore: app token definition */
-  --accent-teal-ink: #028277; /* kit-ui-check-ignore: app token definition */
-  --accent-coral-ink: #db3529; /* kit-ui-check-ignore: app token definition */
-  --accent-indigo-ink: #5f62ec; /* kit-ui-check-ignore: app token definition */
-  --accent-orange-ink: #aa6203; /* kit-ui-check-ignore: app token definition */
-  --accent-sky-ink: #027ab8; /* kit-ui-check-ignore: app token definition */
-  --accent-pink-ink: #d42f85; /* kit-ui-check-ignore: app token definition */
-  --accent-lime-ink: #4e8103; /* kit-ui-check-ignore: app token definition */
-  --accent-cyan-ink: #017e9b; /* kit-ui-check-ignore: app token definition */
+  --accent-amber-ink: #a75a00; /* kit-ui-check-ignore: app token definition */
+  --accent-green-ink: #027b56; /* kit-ui-check-ignore: app token definition */
+  --accent-teal-ink: #02786d; /* kit-ui-check-ignore: app token definition */
+  --accent-coral-ink: #d23327; /* kit-ui-check-ignore: app token definition */
+  --accent-indigo-ink: #585bdb; /* kit-ui-check-ignore: app token definition */
+  --accent-orange-ink: #a25d03; /* kit-ui-check-ignore: app token definition */
+  --accent-sky-ink: #0270a9; /* kit-ui-check-ignore: app token definition */
+  --accent-pink-ink: #c92d7e; /* kit-ui-check-ignore: app token definition */
+  --accent-lime-ink: #497803; /* kit-ui-check-ignore: app token definition */
+  --accent-cyan-ink: #017590; /* kit-ui-check-ignore: app token definition */
   /* Tool-category color map (see internal/parser/taxonomy.go for normalized values) */
   --cat-read: #4a7ba8; /* Read, Grep, Glob */ /* kit-ui-check-ignore: app token definition */
   --cat-edit: #5a8b3a; /* Edit, Write */ /* kit-ui-check-ignore: app token definition */
@@ -154,6 +168,22 @@
 
 /* Dark theme — app-specific tokens */
 :root.dark {
+  --accent-violet-ink: #bca7fc; /* kit-ui-check-ignore: app token definition */
+  --accent-rose-ink: #fc98a5; /* kit-ui-check-ignore: app token definition */
+  --accent-purple-ink: #bca7fc; /* kit-ui-check-ignore: app token definition */
+  --accent-blue-ink: #7ab6fb; /* kit-ui-check-ignore: app token definition */
+  --bg-primary: #012542; /* kit-ui-check-ignore: app token definition */
+  --bg-surface: #123049; /* kit-ui-check-ignore: app token definition */
+  --bg-surface-hover: #193b55; /* kit-ui-check-ignore: app token definition */
+  --bg-inset: #0a2b46; /* kit-ui-check-ignore: app token definition */
+  --border-default: #47637b; /* kit-ui-check-ignore: app token definition */
+  --border-muted: #2a4358; /* kit-ui-check-ignore: app token definition */
+  --text-primary: #ffffff; /* kit-ui-check-ignore: app token definition */
+  --text-secondary: #e0e7ed; /* kit-ui-check-ignore: app token definition */
+  --text-muted: #a3bbce; /* kit-ui-check-ignore: app token definition */
+  --accent-red: #f56a6c; /* kit-ui-check-ignore: app token definition */
+  --focus-ring: 2px solid #f56a6c; /* kit-ui-check-ignore: app token definition */
+
   --accent-teal: #2dd4bf; /* kit-ui-check-ignore: app token definition */
   --usage-series-teal: var(--accent-teal); /* kit-ui-check-ignore: app token definition */
   --usage-series-amber: var(--accent-amber); /* kit-ui-check-ignore: app token definition */
@@ -183,14 +213,15 @@
   --accent-lime-foreground: #07111f; /* kit-ui-check-ignore: app token definition */
   --accent-cyan-foreground: #07111f; /* kit-ui-check-ignore: app token definition */
   --accent-violet-foreground: #07111f; /* kit-ui-check-ignore: app token definition */
+  --accent-red-ink: #fa9b9d; /* kit-ui-check-ignore: app token definition */
   --accent-amber-ink: var(--accent-amber);
   --accent-green-ink: var(--accent-green);
   --accent-teal-ink: var(--accent-teal);
-  --accent-coral-ink: var(--accent-coral);
-  --accent-indigo-ink: var(--accent-indigo);
+  --accent-coral-ink: #fa9d94; /* kit-ui-check-ignore: app token definition */
+  --accent-indigo-ink: #a8affb; /* kit-ui-check-ignore: app token definition */
   --accent-orange-ink: var(--accent-orange);
   --accent-sky-ink: var(--accent-sky);
-  --accent-pink-ink: var(--accent-pink);
+  --accent-pink-ink: #f995c8; /* kit-ui-check-ignore: app token definition */
   --accent-lime-ink: var(--accent-lime);
   --accent-cyan-ink: var(--accent-cyan);
   /* Same series hues stepped for the dark surface, not an automatic flip;

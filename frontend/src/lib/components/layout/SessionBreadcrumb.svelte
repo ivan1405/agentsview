@@ -730,7 +730,7 @@
   /* The grade inks are dark, so dark mode needs a larger primary share
      for the 11px label to stay above 4.5:1 on the hover fill. */
   :global(:root.dark) .grade-badge {
-    color: color-mix(in srgb, var(--grade-ink) 50%, var(--text-primary));
+    color: color-mix(in srgb, var(--grade-ink) 45%, var(--text-primary));
   }
 
   .session-id {
