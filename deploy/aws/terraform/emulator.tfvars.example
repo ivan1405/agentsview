@@ -1,0 +1,8 @@
+aws_emulator        = true
+region              = "us-east-1"
+name                = "agentsview-local"
+domain_name         = "localhost"
+certificate_arn     = "arn:aws:acm:us-east-1:000000000000:certificate/00000000-0000-0000-0000-000000000000"
+machines            = ["laptop"]
+collector_interval  = "5s"
+deletion_protection = false

@@ -1,0 +1,3 @@
+.env.emulator
+.emulator-ca.pem
+__pycache__/

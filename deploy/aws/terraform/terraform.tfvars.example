@@ -1,0 +1,10 @@
+region = "us-east-1"
+domain_name = "sessions.example.com"
+certificate_arn = "arn:aws:acm:us-east-1:123456789012:certificate/00000000-0000-0000-0000-000000000000"
+machines = ["laptop", "ci-runner"]
+# route53_zone_id = "Z0123456789EXAMPLE"
+# allowed_cidrs = ["192.0.2.0/24"]
+# create_uploader_users = false
+# single_nat_gateway = false
+# db_multi_az = true
+# ingest_kms_key_arn = "arn:aws:kms:us-east-1:123456789012:key/00000000-0000-0000-0000-000000000000"
