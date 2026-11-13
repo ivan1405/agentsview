@@ -177,28 +177,31 @@ sudo apt install "$HOME/aws-emulator.deb"
 aws-emulator
 ```
 
-On macOS, enable **host networking** in Docker Desktop 4.34 or later.
-The Compose runtime uses host networking on Linux too. Do not publish
-ports with `-p`: all services bind only loopback. Ports 9297 (emulator),
-15432 (PostgreSQL), 8080 (web), and 8081 (collector API) must be free.
-Docker Desktop Enhanced Container Isolation is incompatible with host
-networking. Windows is not covered by this workflow.
+Linux uses the native emulator and the unchanged host-network Compose
+runtime. Ports 9297 (emulator), 15432 (PostgreSQL), 8080 (web), and 8081
+(collector API) must be free; all listeners bind only host loopback.
+Windows is not covered by this workflow.
 
 There is no official prebuilt emulator image. On macOS, build the supplied
 Dockerfile (adapted from the
 [official Docker instructions](https://docs.aws.amazon.com/emulator/latest/userguide/getting-started-docker.html))
-from `deploy/aws`, then run it in a separate terminal:
+from `deploy/aws`. Run it in bridge mode, publishing only host loopback;
+Docker Desktop host networking is not needed:
 
 ```sh
 docker build --platform linux/amd64 -f Dockerfile.emulator -t aws-emulator-local .
 mkdir -p "$HOME/.aws/emulator"
-docker run --rm --platform linux/amd64 --network host \
+docker run --rm -d --name agentsview-aws-emulator --platform linux/amd64 \
+  -e EMULATOR_BIND_ADDRESS=0.0.0.0 -p 127.0.0.1:9297:9297 \
   --mount "type=bind,src=$HOME/.aws/emulator,dst=/home/emulator/.aws/emulator" \
   aws-emulator-local
 ```
 
-The native Linux install and Compose runtime have been smoke-tested;
-the Docker Desktop/macOS instructions have not been executed here.
+Only ports 9297 (emulator) and 8080 (web) must be free on the Mac. The
+emulator listens on all interfaces inside its container so Docker port
+forwarding can reach it, but the host publication is loopback-only.
+The bridge-mode emulator and Desktop override have been smoke-tested on
+Linux; actual Docker Desktop/macOS execution remains unverified.
 See the [AWS Emulator guide](https://docs.aws.amazon.com/emulator/latest/userguide/)
 for other installation options.
 
@@ -225,8 +228,32 @@ terraform workspace select emulator || terraform workspace new emulator
 terraform apply -var-file=emulator.tfvars.example
 cd ..
 python3 emulator-env.py
+```
+
+On Linux, start the host-network runtime from `deploy/aws`:
+
+```sh
 docker compose --env-file .env.emulator up -d --wait
 ```
+
+On macOS, select the Docker Desktop override instead, from `deploy/aws`:
+
+```sh
+export COMPOSE_FILE=compose.yaml:compose.desktop.yaml
+docker compose --env-file .env.emulator up -d --wait
+```
+
+Keep `COMPOSE_FILE` exported for all subsequent Compose commands, including
+logs and shutdown; export it again in new terminals. The override's pinned
+`net` forwarder shares one network namespace with PostgreSQL, web, and
+collector. It forwards namespace loopback port 9297 to
+`host.docker.internal:9297`, preserving TLS hostnames. PostgreSQL and the
+collector remain loopback-only inside that namespace, without published
+ports. Only the web listens on `0.0.0.0` inside the namespace, with required
+bearer authentication and `--public-url http://localhost:8080`; Docker
+publishes it as `127.0.0.1:8080:8080`. No host interface other than loopback
+is published. The override adds `host.docker.internal:host-gateway` for
+Linux testing as well; it does not require that name on the host itself.
 
 Keep local state separate from real deployments. The endpoint is supplied
 by `AWS_ENDPOINT_URL`; the variable does not set or verify the endpoint.
@@ -246,8 +273,9 @@ emulator's bootstrap key. Its S3 client uses `AWS_S3_ENDPOINT`, not
 `AWS_ENDPOINT_URL`. The CA is mounted read-only and `SSL_CERT_FILE` tells
 Go's Linux certificate verifier to trust it; `AWS_CA_BUNDLE` alone does
 not configure this manually constructed S3 client. No TLS verification is
-disabled. Host networking preserves `127.0.0.1`, which is in the emulator
-certificate's SANs along with `localhost`.
+disabled. Linux host networking and the Desktop loopback forwarder both
+preserve `127.0.0.1`, which is in the emulator certificate's SANs along with
+`localhost`.
 
 The collector starts before the web service so they cannot race on initial
 PostgreSQL schema creation. Its SQLite archive and PostgreSQL data use
